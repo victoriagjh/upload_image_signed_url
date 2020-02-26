@@ -16,12 +16,9 @@ class App extends Component {
     // formData.append("image", this.state.file);
 
     try {
-      API.get(`/dictionary`, {
-        headers: {
-
-        }
+      API.get(`/upload_file`, {
       }).then(res => {
-
+        console.log(res);
       }).catch(err => {
       });
 
