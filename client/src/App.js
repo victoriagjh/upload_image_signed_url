@@ -11,22 +11,25 @@ class App extends Component {
   }
 
   uploadFile = async e => {
-
     // let formData = new FormData();
     // formData.append("image", this.state.file);
-
     try {
-      API.get(`/upload_file`, {
+      API.get(`/get_signed_url`, {
+        params: {
+          file_name: this.state.file.name
+        }
       }).then(res => {
         console.log(res);
       }).catch(err => {
+        console.log(err);
       });
 
-
     } catch (err) {
+      console.log(err);
     }
   }
   handleFileInput = async e => {
+    console.log(e.target.files[0]);
     this.setState({
       file: e.target.files[0]
     });
