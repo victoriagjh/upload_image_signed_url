@@ -11,8 +11,8 @@ class App extends Component {
   }
 
   uploadFile = async e => {
-    // let formData = new FormData();
-    // formData.append("image", this.state.file);
+    let formData = new FormData();
+    formData.append("file", this.state.file);
     try {
       API.get(`/get_signed_url`, {
         params: {
@@ -23,10 +23,23 @@ class App extends Component {
       }).catch(err => {
         console.log(err);
       });
-
     } catch (err) {
       console.log(err);
     }
+    // File Upload시 파일 전송은 이렇게 하면 됨.
+    // try {
+    //   API.post(`/upload_file`, formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data'
+    //     }
+    //   }).then(res => {
+    //     console.log(res);
+    //   }).catch(err => {
+    //     console.log(err);
+    //   });
+    // } catch (err) {
+    //   console.log(err);
+    // }
   }
   handleFileInput = async e => {
     console.log(e.target.files[0]);
