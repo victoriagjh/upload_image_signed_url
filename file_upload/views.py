@@ -16,10 +16,11 @@ def get_signed_url(request):
         print(file_name)
 
         storage_client = storage.Client.from_service_account_json('/Users/gwonjoohee/Downloads/upload-image-signed-url-68f7095e09a3.json')
-        # buckets = list(storage_client.list_buckets())
-        # print(buckets)
         bucket = storage_client.get_bucket("image_upload_storage")
+        print(bucket.name)
+
         blob = bucket.blob(file_name)
+        print(blob)
 
         url = blob.generate_signed_url(
             version='v4',
