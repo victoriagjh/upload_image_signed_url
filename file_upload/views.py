@@ -8,53 +8,49 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 
 from google.cloud import storage
+import requests
+from idna import unicode
+
+storage_client = storage.Client.from_service_account_json(
+    '/Users/gwonjoohee/Downloads/upload-image-signed-url-68f7095e09a3.json')
 
 @csrf_exempt
 def get_signed_url(request):
     if request.method == "GET":
         file_name = request.GET['file_name']
-        print(file_name)
-
-        storage_client = storage.Client.from_service_account_json('/Users/gwonjoohee/Downloads/upload-image-signed-url-68f7095e09a3.json')
-
-        # buckets = list(storage_client.list_buckets())
+        content_type = request.GET['content_type']
+        print(content_type)
 
         bucket = storage_client.get_bucket("upload-image-storage")
 
         blob = bucket.blob(file_name)
-        print(blob)
 
         url = blob.generate_signed_url(
             version='v4',
             # This URL is valid for 15 minutes
             expiration=datetime.timedelta(minutes=15),
             # Allow GET requests using this URL.
-            method='GET')
-
-        print('Generated GET signed URL:')
-        print(url)
-        print('You can use this URL with any user agent, for example:')
-        print('curl \'{}\''.format(url))
+            method='PUT',
+            content_type=content_type
+        )
 
     return JsonResponse({'status': 0, 'signed_url': url})
 
 @csrf_exempt
 def upload_file(request):
     if request.method == 'POST':
-        print(request.FILES['file'])
-        print(request.FILES['file'].name)
-        print(request.FILES['file'].content_type)
-        print("SIZE : ",request.FILES['file'].size)
+        signed_url = request.POST['text']
+        #TODO: File Validation하고 업로드해야함.
 
-        # path = '/%s/%s' % ('upload-image-storage',file_name)
-        # print(path)
+        #TODO: 한글 파일명이면 업로드 실패하는
+        # print(type(request.FILES['file'].name))
+        # slug = unicode(request.FILES['file'].name, "utf-8")
 
-        # print(content_type, file)
-        # response = cloud_storage_UrlSigner.Put(path=path, content_type="image", data=file)
-        # print("RESPONSE : ", response)
-    # response = CloudStorageURLSigner.Get('/bucket/'+)
+        headers = {'Content-type': request.FILES['file'].content_type, 'Slug': request.FILES['file'].name}
+        res = requests.put(signed_url,data=request.FILES['file'].read(), headers=headers)
 
-    # print(response)
-    # print(environ.API_KEY)
-    # print(default_storage)
-    return JsonResponse({'status': 0, 'data': "hihi"})
+        if res.status_code == 200:
+            print("return public url")
+            #TODO: return public url
+
+    return JsonResponse({'status': 0, 'content': "temp_url"})
