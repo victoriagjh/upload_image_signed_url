@@ -5,7 +5,6 @@ from django.shortcuts import render
 # Create your views here.
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
 
 from google.cloud import storage
 import requests
@@ -19,7 +18,6 @@ def get_signed_url(request):
     if request.method == "GET":
         file_name = request.GET['file_name']
         content_type = request.GET['content_type']
-        print(content_type)
 
         bucket = storage_client.get_bucket("upload-image-storage")
 
@@ -33,8 +31,10 @@ def get_signed_url(request):
             method='PUT',
             content_type=content_type
         )
+        return JsonResponse({'status': 0, 'signed_url': url})
 
-    return JsonResponse({'status': 0, 'signed_url': url})
+    return JsonResponse({'state' : "ERROR"})
+
 
 @csrf_exempt
 def upload_file(request):
@@ -50,7 +50,8 @@ def upload_file(request):
         res = requests.put(signed_url,data=request.FILES['file'].read(), headers=headers)
 
         if res.status_code == 200:
-            print("return public url")
-            #TODO: return public url
+            bucket = storage_client.get_bucket("upload-image-storage")
+            blob = bucket.blob(request.FILES['file'].name)
+            return JsonResponse({'status': 0, 'content': blob.public_url})
 
-    return JsonResponse({'status': 0, 'content': "temp_url"})
+    return JsonResponse({'state': "ERROR"})
