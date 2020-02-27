@@ -8,7 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from google.cloud import storage
 import requests
-from idna import unicode
+import urllib.request
+import urllib.parse
 
 storage_client = storage.Client.from_service_account_json(
     '/Users/gwonjoohee/Downloads/upload-image-signed-url-68f7095e09a3.json')
@@ -40,18 +41,16 @@ def get_signed_url(request):
 def upload_file(request):
     if request.method == 'POST':
         signed_url = request.POST['text']
-        #TODO: File Validation하고 업로드해야함.
 
-        #TODO: 한글 파일명이면 업로드 실패하는
-        # print(type(request.FILES['file'].name))
-        # slug = unicode(request.FILES['file'].name, "utf-8")
+        slug = request.FILES['file'].name
 
-        headers = {'Content-type': request.FILES['file'].content_type, 'Slug': request.FILES['file'].name}
+        headers = {'Content-type': request.FILES['file'].content_type, 'Slug': slug.encode('latin-1','ignore')}
         res = requests.put(signed_url,data=request.FILES['file'].read(), headers=headers)
 
         if res.status_code == 200:
             bucket = storage_client.get_bucket("upload-image-storage")
             blob = bucket.blob(request.FILES['file'].name)
-            return JsonResponse({'status': 0, 'content': blob.public_url})
+            if blob.exists():
+                return JsonResponse({'status': 0, 'content': blob.public_url})
 
     return JsonResponse({'state': "ERROR"})
