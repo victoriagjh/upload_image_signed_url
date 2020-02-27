@@ -6,11 +6,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from google.cloud import storage
+from django.conf import settings
 import requests
-
-storage_client = storage.Client.from_service_account_json(
-    '/Users/gwonjoohee/Downloads/upload-image-signed-url-68f7095e09a3.json')
 
 @csrf_exempt
 def get_signed_url(request):
@@ -18,7 +15,7 @@ def get_signed_url(request):
         file_name = request.GET['file_name']
         content_type = request.GET['content_type']
 
-        bucket = storage_client.get_bucket("upload-image-storage")
+        bucket = settings.STORAGE_CLIENT.get_bucket("upload-image-storage")
 
         blob = bucket.blob(file_name)
 
@@ -46,7 +43,7 @@ def upload_file(request):
         res = requests.put(signed_url,data=request.FILES['file'].read(), headers=headers)
 
         if res.status_code == 200:
-            bucket = storage_client.get_bucket("upload-image-storage")
+            bucket = settings.STORAGE_CLIENT.get_bucket("upload-image-storage")
             blob = bucket.blob(request.FILES['file'].name)
             if blob.exists():
                 return JsonResponse({'status': 0, 'content': blob.public_url})
