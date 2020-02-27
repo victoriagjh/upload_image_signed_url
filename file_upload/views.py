@@ -8,8 +8,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 from google.cloud import storage
 import requests
-import urllib.request
-import urllib.parse
 
 storage_client = storage.Client.from_service_account_json(
     '/Users/gwonjoohee/Downloads/upload-image-signed-url-68f7095e09a3.json')
