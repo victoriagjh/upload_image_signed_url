@@ -16,8 +16,10 @@ def get_signed_url(request):
         print(file_name)
 
         storage_client = storage.Client.from_service_account_json('/Users/gwonjoohee/Downloads/upload-image-signed-url-68f7095e09a3.json')
-        bucket = storage_client.get_bucket("image_upload_storage")
-        print(bucket.name)
+
+        # buckets = list(storage_client.list_buckets())
+
+        bucket = storage_client.get_bucket("upload-image-storage")
 
         blob = bucket.blob(file_name)
         print(blob)
@@ -34,8 +36,7 @@ def get_signed_url(request):
         print('You can use this URL with any user agent, for example:')
         print('curl \'{}\''.format(url))
 
-
-    return JsonResponse({'status': 0, 'data': "hello"})
+    return JsonResponse({'status': 0, 'signed_url': url})
 
 @csrf_exempt
 def upload_file(request):

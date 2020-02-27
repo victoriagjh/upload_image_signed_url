@@ -19,7 +19,7 @@ class App extends Component {
           file_name: this.state.file.name
         }
       }).then(res => {
-        console.log(res);
+        console.log(res.data.signed_url);
       }).catch(err => {
         console.log(err);
       });
