@@ -27,7 +27,7 @@ def get_signed_url(request):
             method='PUT',
             content_type=content_type
         )
-        return JsonResponse({'status': 0, 'signed_url': url})
+        return JsonResponse({'status': 0, 'signed_url': url, 'public_url': blob.public_url})
 
     return JsonResponse({'state' : "ERROR"})
 
