@@ -19,7 +19,7 @@ class App extends Component {
     this.state = {
       file: null,
       public_url: null,
-      isUploaded: false
+      isUploaded: null
     };
   }
 
@@ -46,6 +46,23 @@ class App extends Component {
           xhr.setRequestHeader('Content-Type', this.state.file.type);
           xhr.send(this.state.file);
 
+          // TODO: fetch API 이용해서 해보기
+          // let formData = new FormData();
+          // formData.append("file", this.state.file);
+          // let headers = {
+          //   'Content-type': 'multipart/form-data',
+          //   'Slug': this.state.file.name,
+          //   'Access-Control-Allow-Origin': '*'
+          // }
+          // let response = await fetch(res.data.signed_url, {
+          //   method: "PUT",
+          //   headers: headers,
+          //   body: formData
+          // });
+          // if (response.status == 200) {
+          //   console.log("hello");
+          // }
+
         }).catch(err => {
           console.log(err);
         });
@@ -59,7 +76,6 @@ class App extends Component {
     this.setState({
       isUploaded: true
     });
-    console.log("response: ", xhr);
   }
 
   onUploadError = (e) => {
