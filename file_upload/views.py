@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from django.conf import settings
+import datetime
 
 @csrf_exempt
 def get_signed_url(request):
@@ -13,8 +14,10 @@ def get_signed_url(request):
         content_type = request.GET['content_type']
 
         bucket = settings.STORAGE_CLIENT.get_bucket("upload-image-storage")
+        print(datetime.datetime.now().date())
+        print(str(datetime.datetime.now().date()))
 
-        blob = bucket.blob(file_name)
+        blob = bucket.blob(str(datetime.datetime.now().date())+"/"+file_name)
 
         url = blob.generate_signed_url(
             version='v4',
