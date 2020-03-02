@@ -7,46 +7,76 @@ class App extends Component {
     super(props);
     this.state = {
       file: null,
-      public_url: null
+      public_url: null,
+      isUploaded: null
     };
   }
 
   uploadFile = async e => {
     if (this.state.file !== null) {
-      let signed_url = null;
       try {
         await API.get(`/get_signed_url`, {
           params: {
             file_name: this.state.file.name,
             content_type: this.state.file.type
           }
-        }).then(res => {
-          console.log(res.data.signed_url);
-          signed_url = res.data.signed_url;
+        }).then(async (res) => {
+          console.log(res.data.signed_url)
+          this.setState({
+            public_url: res.data.public_url
+          });
+          let xhr = new XMLHttpRequest();
+          xhr.open('PUT', res.data.signed_url);
+          xhr.onload = () => {
+            this.onUploadFinish(xhr);
+          };
+          xhr.upload.onprogress = this.onUploadProgress;
+          xhr.onerror = this.onUploadError;
+          xhr.setRequestHeader('Content-Type', this.state.file.type);
+          xhr.send(this.state.file);
+
+          // TODO: fetch API 이용해서 해보기
+          // let formData = new FormData();
+          // formData.append("file", this.state.file);
+          // let headers = {
+          //   'Content-type': 'multipart/form-data',
+          //   'Slug': this.state.file.name,
+          //   'Access-Control-Allow-Origin': '*'
+          // }
+          // let response = await fetch(res.data.signed_url, {
+          //   method: "PUT",
+          //   headers: headers,
+          //   body: formData
+          // });
+          // if (response.status == 200) {
+          //   console.log("hello");
+          // }
+
         }).catch(err => {
           console.log(err);
         });
       } catch (err) {
         console.log(err);
       }
-      let formData = new FormData();
-      formData.append("file", this.state.file);
-      formData.append("text", signed_url);
+    }
+  }
 
-      await API.post(`/upload_file`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }).then(res => {
-        console.log(res.data.content)
+  onUploadFinish = (xhr) => {
+    this.setState({
+      isUploaded: true
+    });
+  }
 
-        this.setState({
-          public_url: res.data.content
-        });
+  onUploadError = (e) => {
+    console.log("error: ", e);
+  }
 
-      }).catch(err => {
-        console.log(err);
-      });
+  onUploadProgress = (event) => {
+    if (event.lengthComputable) {
+      var percentComplete = event.loaded / event.total;
+      console.log(percentComplete);
+    } else {
+      // Unable to compute progress information since the total size is unknown
     }
   }
 
@@ -69,7 +99,7 @@ class App extends Component {
         />
         <button onClick={e => this.uploadFile(e)}> 업로드 </button>
         <br />
-        {this.state.public_url ? <img src={this.state.public_url} alt="load_fail" /> : null}
+        {this.state.isUploaded ? <img src={this.state.public_url} alt="load_fail" /> : null}
       </div>
     );
   }
