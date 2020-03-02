@@ -1,17 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import { API } from "./api";
-import axios from "axios";
-
-axios.interceptors.response.use(
-  function (response) {
-    response.headers["aaaa"] = "custom header value";
-    return response;
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
 
 class App extends Component {
   constructor(props) {
