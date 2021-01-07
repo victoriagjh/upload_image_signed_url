@@ -15,7 +15,7 @@ docutils==0.14
 gprof2dot==2017.9.19
 idna==2.8
 Jinja2==2.10.1
-lxml==4.3.3
+lxml==4.6.2
 Markdown==3.1
 MarkupSafe==1.1.1
 murmurhash==0.28.0
