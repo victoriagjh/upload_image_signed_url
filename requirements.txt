@@ -10,7 +10,7 @@ django-excel-response2==2.0.8
 django-filter==2.1.0
 django-silk==3.0.2
 django-six==1.0.4
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 docutils==0.14
 gprof2dot==2017.9.19
 idna==2.8
